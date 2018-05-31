@@ -1,0 +1,37 @@
+#Make es5 version
+
+go to `package.json`
+
+  add the following code
+
+  | "scripts": {
+  |   "[arbitraryName]": "babel
+  |        [your folder name where you have put your es6 version JS file]
+  |        -d
+  |        [destination folder where you want es20155 code]"
+  | }
+  | "scripts": {
+  |   "[arbitraryName]": "babel
+  |          --presets es2015
+  |          [source folder]
+  |          -d
+  |          [destination folder]"
+  | }
+
+
+  Then in your command license
+
+  |     $ npm run [arbitraryName]
+
+  ------------------------X------------------------
+
+#What is `let`
+
+If you declare a variable with a global scope and then you declare the
+same variable inside a 'loop' or an 'if' statement, then that newly created variable's scope
+will me limited to the 'loop' or 'if' statement.
+
+`let` allows you to declare variables that are limited in scope to the block, statement
+or expression on which it is used.
+Unlike `var` keyword, which defines a variable globally, or locally to an
+entire function regardless of block scope.
