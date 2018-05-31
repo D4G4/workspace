@@ -1,0 +1,7 @@
+#Project specific setup
+
+#It tells ESlint to go and find the installed dependency inside
+#nodes_modules(eslint-..) dependency
+{
+  "extends":"rallycoding"
+}

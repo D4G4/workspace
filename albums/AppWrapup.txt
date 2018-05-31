@@ -1,0 +1,32 @@
+1. We generate a project with `react-native cli`.
+2. This produces a new react made of project capable of running both
+   Android and IOS apps
+3. We start a simulator using
+      `react-native run ios`
+      `react-native run android`
+
+4. We created quite a few components, we found out that there were
+  two different types of components inside React Native.
+    * Class Based Components :
+          -> Have access to component level state and lifecycle methods
+
+    * Functional Components :
+          -> which are largely presentational components that
+             produce some amount of JSX and show some data to the user
+
+5. Speaking of States :
+  We used State inside AlbumList component.
+  State is available to Class based component.
+  State is used to record and react to user actions.
+
+  Here, we fetched a list of albums and we assigned or updated the list using
+  `this.setState()` -> triggers `render()`
+
+6. Make HTTP request using `axious`
+
+7. Then we created our AlbumDetail component.
+  by mapping over our list of albums.
+
+  We pass a single album item to AlbumDetail component by
+  specifying "props"
+  Props is a data that a parent component passes to it's child component(s)

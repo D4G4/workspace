@@ -1,0 +1,158 @@
+Difference between React and ReactNative library
+  React:
+    Knows how a component should BEHAVE (what functions it should have)
+    Knows how to take a bunch of components and make them work together.
+
+    ReactNative:
+      Knows how to take an output from a component and PLACE it on the screen
+      Provides default core components (image ,text)
+
+
+These 'import' statements we'll be using are a part of ES6
+which is a newer version of JS.
+With ES6 each file can be thought of having a separate apartment or cell
+By default, no file gets access to any global variables.
+This can be achieved only with the help of 'import' statement.
+
+-------------------------------X-------------------------------X-------------------------------X-------------------------------
+
+  return (
+    <Text> Some text </Text>  //This isn't html but JSX
+  );
+
+  Normal javaScript code for above lines:
+
+  return(
+    React.createElement(
+      Text,
+      null,
+      "Some text"
+    )
+  );
+
+-------------------------------X-------------------------------X-------------------------------X-------------------------------
+  //Create a component
+  const App = () => {
+    return (
+      <Text> Some text </Text>  //This isn't html but JSX
+    );
+  };
+  */
+
+  //Refactoring above code because you are't doing anything inside the function except returning a value
+  const App = () => (<Text> Some text </Text>);
+
+-------------------------------X-------------------------------X-------------------------------X-------------------------------
+
+Component:
+  A javaScript function that returns some sort of JSX
+  JSX (preprocessor step that adds XML syntax to JavaScript)
+    is a dialect of javaScript that tells ReactNative of what content
+    we want to show on the screen
+
+ReactNative is going to take our component and render it to the screen -> It will take the JSX that gets returned
+and will decide what component should appear on the screen.
+
+-------------------------------X-------------------------------X-------------------------------X-------------------------------
+A normal react app will have many different components.
+So when we join all these components together, they form a tree of source where
+the very first component to be rendered on the screen is refer to as 'root' component.
+
+In this application, 'App' is the root component. (refer index.js)
+
+Only the 'root' component uses the 'AppRegistry'
+
+For every child component, instead of registering it, we export it using ES6 syntax.
+So along with using 'import' statements, we'll also use 'export' statements.
+
+
+NOTE whenever me make a reference to a JS variable, we use curly braces
+----------------------------------X----------------------------------
+
+FlexBox:
+
+justify-content : position components into vertical direction
+
+align-items : manipulating items horizontally     (container level property)
+
+align-self: component level property
+
+----------------------------------X----------------------------------
+
+For any component that we create, we must return a SINGLE
+top level JSX tag.
+
+
+Functional Components : Only rule they have is that it must return some values
+
+----------------------------------X----------------------------------
+
+You don't and should now de-structure the
+| import React from 'react';
+statement because, whenever the babble goes through the our JSX code, it will
+convert it into `React.createElement` calls.
+
+So to both import the `React` and de-structure the imports
+import React, { Component } from 'react';
+
+----------------------------------X----------------------------------
+
+Class based components have lifecycle methods
+
+----------------------------------X----------------------------------
+
+State:
+
+Definition:  A plain JS Object this is ONLY available to class based components and is
+             used to record and respond to user-triggered events
+
+When we need to update what a component shows, call 'this.setState'
+
+Only update/change state with 'setState', do not do 'this.state'
+
+
+
+Difference between 'state' and 'props'
+
+Whenever you want to communicate b/w parent->child component, we use 'props'
+'state' on the other hand is for component's internal record-keeping. We use state
+when we ant to update some amount of data overtime.
+
+----------------------------------X----------------------------------
+
+map()
+is an array helper
+
+how does it work?
+we pass it a federal function, which will be called the numerous times
+depending upon the size of the array and then the output from each federal Function
+will be added into a new array which will be returned from the map function.
+
+----------------------------------X----------------------------------
+whenever there are components that are in an array, and rendering it inside JSX,
+each component inside that array must have a 'key(unique) property' associated with it.
+Why? Performance concerns, that's how react make sure that as it renders a list of components,
+it is intelligently re-rendering a particular component.
+
+----------------------------------X----------------------------------
+Anytime that we pass a component that we write to another component , that component will
+show up on the props object as `props.children`
+So if we just add a reference inside our JSX to props.children, it will render any components
+that we passed to our component.
+
+----------------------------------X----------------------------------
+
+Image:
+
+-> Needs an object { uri: value } to download the image and display it.
+
+-> Won't automatically take the space and display itself on the screen,
+you'll have to specify that too.
+
+----------------------------------X----------------------------------
+
+ScrollView:
+
+You must add a style property of 'flex 1' to your root element, which is 'index.js' here.
+So what this 'flex 1` property does it that
+It says "Please expand this component to fill the entire content area of the on the device"

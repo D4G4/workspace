@@ -1,0 +1,14 @@
+EsLint setup (Project specific)
+
+| `$ npm install --save-dev eslint-config-rallycoding`
+
+make a file `.eslintrc` in your project directory
+
+| {
+|   "extends": "rallycoding"
+| }
+
+
+-------------X--------------X-----------------------X--------------X-----------------------X--------------X----------
+
+You must keep 'index.js' file in it's default/project directory in order to start up correctly.
