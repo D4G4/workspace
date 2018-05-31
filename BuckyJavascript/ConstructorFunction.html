@@ -1,0 +1,70 @@
+<html>
+
+  <style media="screen">
+    body{
+      background-color: #B1AFB0;
+    }
+  </style>
+
+  <head>
+    <!-- Making a blueprint inside head. (Good practice :) -->
+    <script type="text/jscript">
+
+        // Making constructor Function
+        function person(name,age){
+          this.name = name;
+          this.age = age;
+          //Don't include your parentheses right here, this is a way to tell javascript that this method
+          //is the part of this object
+          this.yearsUntilRetireFunction = yearsLeft;  //yearsUtilRetire will not be a function
+        }
+
+        // Functions of person class
+        function yearsLeft(){
+          var numYears = 65 - this.age;
+          return numYears;
+        }
+
+
+        var human1 = new person("Daksh Gargas",20);
+        var human2 = new person("Taylor Swift",24);
+
+
+        //using new.target.name and new.target
+        class A {
+          constructor() {
+            document.write("Inside A's constructor -> new.taget.name = " + new.target.name + "<br><br>");
+          }
+        }
+
+        class B extends A { constructor() { super(); } }
+
+        var a = new A(); // logs "A"
+        var b = new B(); // logs "B"
+
+        class C { constructor() { document.write(new.target + "<br>"); } }
+        class D extends C { constructor() { super(); } }
+
+        var c = new C(); // logs class C{constructor(){console.log(new.target);}}
+        var d = new D(); // logs class D extends C{constructor(){super();}}
+
+    </script>
+  </head>
+
+
+  <body>
+    <script type="text/jscript">
+
+      document.write("<br><br> Inside body <br>");
+      document.write(human1.name);
+      document.write("<br> Age :");
+      document.write(human1.age);
+      document.write("<br> Years Until Retire :");
+      document.write(human1.yearsUntilRetireFunction());
+
+      document.write("<br><br> Human2 <br> Years Until Retire ")
+      document.write(human2.yearsUntilRetireFunction())
+
+    </script>
+  </body>
+</html>

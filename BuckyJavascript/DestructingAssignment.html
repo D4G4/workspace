@@ -1,0 +1,104 @@
+<html>
+
+  <style media="screen">
+    body{
+      background-color: #B1AFB0;
+    }
+  </style>
+
+  <body>
+    <script type="text/jscript">
+
+
+    var a, b, rest;
+
+    [a, b] = [10, 20];
+
+    document.write(a);  document.write("<br>");
+    document.write(b);  document.write("<br><br>");
+
+
+    [a, b, ...rest] = [10, 20, 30, 40, 50];
+    document.write(rest);  document.write("<br><br>");
+
+    ({a, b} = {a: 10, b: 20});
+    document.write(a);  document.write("<br>");
+    document.write(b);  document.write("<br><br>");
+
+    // Stage 3 proposal
+    // ({a, b, ...rest} = {a: 10, b: 20, c: 30, d: 40});
+    // document.write(a);  document.write("<br>");
+    // document.write(b);  document.write("<br>");
+    // document.write(rest);  document.write("<br>");
+
+    //Array destructing
+    var foo = ['one', 'two', 'three'];
+
+    var [one, two, three] = foo;
+    document.write(one + "<br>");
+    document.write(two + "<br>");
+    document.write(three + "<br><br>");
+
+    //Default values
+    var a, b;
+    [a=5, b=7] = [1];
+    document.write(a + "<br>");
+    document.write(b + "<br><br>");
+
+
+    //Passing an array returned from a function and ignoring some values
+
+    function fun(){
+      return [1, 2, 3];
+    }
+
+    var a, b;
+    [a, ,b] = fun();
+    document.write(a + "<br>");
+    document.write(b + "<br><br>");
+
+
+    //Object destructing (variable name should be the same)
+    var o = {p: 42, q: true};
+    var {p, q} = o;
+    document.write("p = " + p + "<br>type " + typeof p +"<br><br>");
+    document.write("q = " + q + "<br> type " + typeof q +"<br><br>");
+
+
+    //Assignment without declaration
+    var a, b;
+
+    ({a, b} = {b: 1, a: 2});
+    document.write("a = " + a + "<br>");        //2
+    document.write("b = " + b + "<br><br>");    //1
+
+
+    //Assigning to new variables names and providing default values
+    document.write("Assigning to new variables names and providing default values<br>");
+    var {daksh:dennis =10, upasana:mummy = 5} = {daksh: 3};
+    document.write(dennis + "<br>");
+    document.write(mummy + "<br><br>");
+
+
+    //Test      (while destructing, your variable name should be on the right side of color (:) )
+    const person = {
+      variableName1: 'Daksh',
+      variableName2: 'Gargas',
+      country: 'Canada',
+      city: 'Hamilton'
+    };
+    //const variableName1 = person.first;
+    //const variableName2 = peron.last;
+    const { variableName1= 10,
+      variableName2: lastName,
+      country: countryName,
+      cityName: city } = person;
+
+    document.write(variableName1 + " " +
+    lastName + " " +
+    countryName + " " +
+    city + "<br>");
+
+    </script>
+  </body>
+</html>

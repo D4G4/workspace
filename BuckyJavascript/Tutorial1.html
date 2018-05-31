@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <h1>
+    This is head with H1 tag
+  </h1>
+
+  <style>
+    body{
+        background-color: #B1AFB0;
+    }
+  </style>
+  </head>
+
+  <body>
+    <script type = "text/javascript">
+
+    document.write("hello world.<br>");
+    document.write("instruction\n");
+
+    //Intoducing variables
+    var normalVariable = 23;
+    document.write("value of normalVariable = ",normalVariable);
+    var negativeNumber = -2121;
+    document.write("<br>negative number = <br>",negativeNumber);
+
+    var variablesWithEscapeCharacters =
+        "<br>john said , \"boy do I love twix\"";
+    document.write(variablesWithEscapeCharacters);
+
+    var alternativeToVariableAbove =
+    'john said "Boy I do love twix"';
+
+    document.write("<br>alternative to above variable = " +
+    alternativeToVariableAbove);
+
+    //Functions
+    function funky(param){
+      alert("Calling another function");
+      alert(tellTheUser());
+      document.write("Printing parameters " + param);
+    }
+
+    function tellTheUser(){
+      return "Once you'll press the 'ok' button, eveything will disappear";
+    }
+
+    function performComparision(param1,param2){
+      if(param1 > param2){
+        document.write("param1 > param2");
+      }else{
+        document.write("param2 > param1");
+      }
+    }
+
+    function checkTheType(param){
+      if(Number.isNaN(param)){
+        document.write("There isn't any number in the parameter");
+      }else{
+        document.write("it containts a number");
+      }
+      // var res = "";
+      // res = res + Number.isNaN(123) + ": 123<br>";
+      // document.write(res);
+    }
+
+    function useSwitchCase(param){
+      switch (typeof param) {
+        case 'boolean':
+          document.write("It's a boolean");
+          break;
+          case 'number':
+          document.write("Its a number");
+          break;
+          case 'string':
+          document.write("It's a string");
+          break;
+          default:
+        document.write("IDK");
+      }
+    }
+
+    function useForLoop(limit){
+      for(x=0;x<limit;x++){
+        document.write("Inside fop loop" + "<br>");
+      }
+    }
+
+    function useWhileLoop(limit){
+      var x = 0;
+      while( x < limit){
+        x++;
+        document.write("Inside while loop " + x + "<br>");
+      }
+    }
+
+    </script>
+
+    <br>
+    <br>
+    <form>
+    <input type = "button" value ="touch me" onclick='funky("He said \"you suck\"")'>
+    <input type = "button" value ="perform a comparision" onclick='performComparision(22,21)'>
+    <input type = "button" value ="Use isNaN()" onclick='checkTheType(21)'>
+    <input type = "button" value ="show me usage of switch case " onclick='useSwitchCase("bla")'>
+    <input type = "button" value ="use a for loop " onclick='useForLoop(5)'>
+    <input type = "button" value ="use a while loop " onclick='useWhileLoop(5)'>
+    </form>
+
+    <form action="Tutorial2.html">
+      <button type="submit"> Open next tutorial </button>
+    </form>
+  </body>
+</html>

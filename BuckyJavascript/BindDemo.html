@@ -1,0 +1,63 @@
+<html>
+
+  <style media="screen">
+    body{
+      background-color: #B1AFB0;
+    }
+  </style>
+
+  <head>
+    <script type="text/jscript">
+
+
+    </script>
+  </head>
+
+
+  <body>
+    <script type="text/jscript">
+
+
+    function f(){
+      return this.a;
+    }
+
+    var g = f.bind({a: 'sup jo first time \'g\' ke saath bind kiya'});
+    document.write(g());          //sup
+    document.write("<br>");
+
+    var e = {a: 'sup jo first time \'e\' ke saath bind kiya', f};
+    document.write(e.f());          //sup
+    document.write("<br>");
+
+    var h = f.bind({a : 'bra jo first time \'h\' ke saath bind kiya'});
+    document.write(h());          //bra
+    document.write("<br>");
+
+    var h = g.bind({a: 'yo'});    //bind only works once!
+    document.write(h());          //sup
+    document.write("<br><br><br>");
+
+    var o = {a: 36, f: f, g: g, h: h};
+    document.write(
+      o.f(),"<br>",
+      o.f(),"<br>",
+      o.g(),"<br>",
+      o.a,  "<br>",
+      o.h(), "<br>");
+    //36, 36, sup, sup
+
+
+    var myFun = {x: c} = {x : 21};
+    document.write(myFun());
+
+    //Wait what? Actually, O is now an object, and we added a variable 'a' in the object,
+    //and the function 'f()' uses this.a
+
+    //Change 'a' to 'xyz' and you won't get the desired result.
+
+    document.write(typeof o);
+
+    </script>
+  </body>
+</html>

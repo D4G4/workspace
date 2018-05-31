@@ -1,0 +1,49 @@
+<html>
+
+  <style media="screen">
+    body{
+      background-color: #B1AFB0;
+    }
+  </style>
+
+  <head>
+    <script type="text/jscript">
+    </script>
+  </head>
+
+
+  <body>
+    <script type="text/jscript">
+
+      function myFunction(action1){
+        return this.name + " is not going to " + arguments[0] + " or " + arguments[1] + " you";
+      }
+
+      var Dog1 = {
+        name : 'Booobooo',
+        legs : 4
+        //,
+        // runs : function(){
+        //   return this.name + "is running.";
+        // }
+      }
+
+      var Dog2 = {
+        name : 'ChooChoo',
+        legs : 6
+        //,
+        // runs : function(){
+        //   return this.name + "is running.";
+        // }
+      }
+
+      //Call() takes two arguments, the object using it and arguments
+      document.write(myFunction.call(Dog1,"bitee","Argument2") + "<br>");
+      document.write(myFunction.call(Dog2,"killl") + "<br>");
+
+
+      //apply() is used when you want to pass an array of items (not just one but two or + items)
+      document.write(myFunction.apply(Dog1,["bite","kill"]))
+    </script>
+  </body>
+</html>

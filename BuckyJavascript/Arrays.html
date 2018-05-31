@@ -1,0 +1,48 @@
+<html>
+
+  <style media="screen">
+    body{
+      background-color: #B1AFB0;
+    }
+  </style>
+
+  <head>
+  </head>
+
+
+  <body>
+    <script type="text/jscript">
+
+        var people = new Array("A","B","C","D","E");
+
+        var things = new Array();
+        things[0] = "Gorgie";
+        things[1] = 121;
+        things[2] = "Bla";
+        things[3] = "Dennis"
+
+        var things2 = new Array(1,2,3,4,5);
+
+//This is fun
+        var addingArray = things + things2;
+
+
+        //Concatinating Array
+        var concatinatedArray = things.concat(things2);
+
+        document.write(people[1] + "<br>");
+        document.write(things[3] + "<br>");              //Wow!! It worked.
+        document.write("Length of array is " + things.length + "<br>");
+
+        document.write("Length of addingArray is " +  addingArray.length + "<br>");
+        document.write(addingArray[0] + " " + addingArray[1] + "<br>");
+
+        document.write("<br>");
+        document.write("Length of concatinatedArray is " +  concatinatedArray.length + "<br>");
+        document.write(concatinatedArray[0] + "<br>" + concatinatedArray[concatinatedArray.length - 1]);
+
+
+
+    </script>
+  </body>
+</html>
