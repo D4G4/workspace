@@ -12,11 +12,11 @@ class App extends Component {
   componentWillMount() {
       firebase.initializeApp({
         apiKey: '--',
-        authDomain: 'finalcourse1app.firebaseapp.com',
-        databaseURL: 'https://finalcourse1app.firebaseio.com',
-        projectId: 'finalcourse1app',
-        storageBucket: 'finalcourse1app.appspot.com',
-        messagingSenderId: '43046462109'
+        authDomain: '--',
+        databaseURL: '--',
+        projectId: '--',
+        storageBucket: '--',
+        messagingSenderId: '--'
       });
     }
 
