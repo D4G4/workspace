@@ -11,7 +11,7 @@ class App extends Component {
 
   componentWillMount() {
       firebase.initializeApp({
-        apiKey: 'AIzaSyDcrPteLjgy6qA3vVQRfBKjd7tRraPH40M',
+        apiKey: '--',
         authDomain: 'finalcourse1app.firebaseapp.com',
         databaseURL: 'https://finalcourse1app.firebaseio.com',
         projectId: 'finalcourse1app',
