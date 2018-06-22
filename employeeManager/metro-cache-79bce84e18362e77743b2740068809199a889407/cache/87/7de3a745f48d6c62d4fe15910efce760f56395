@@ -1,0 +1,702 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  'use strict';
+
+  _require(_dependencyMap[0], 'whatwg-fetch');
+
+  var setTimeoutFunc = setTimeout;
+
+  function noop() {}
+
+  function bind(fn, thisArg) {
+    return function () {
+      fn.apply(thisArg, arguments);
+    };
+  }
+
+  function Promise(fn) {
+    if (!(this instanceof Promise)) throw new TypeError('Promises must be constructed via new');
+    if (typeof fn !== 'function') throw new TypeError('not a function');
+    this._state = 0;
+    this._handled = false;
+    this._value = undefined;
+    this._deferreds = [];
+    doResolve(fn, this);
+  }
+
+  function handle(self, deferred) {
+    while (self._state === 3) {
+      self = self._value;
+    }
+
+    if (self._state === 0) {
+      self._deferreds.push(deferred);
+
+      return;
+    }
+
+    self._handled = true;
+
+    Promise._immediateFn(function () {
+      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+
+      if (cb === null) {
+        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+        return;
+      }
+
+      var ret;
+
+      try {
+        ret = cb(self._value);
+      } catch (e) {
+        reject(deferred.promise, e);
+        return;
+      }
+
+      resolve(deferred.promise, ret);
+    });
+  }
+
+  function resolve(self, newValue) {
+    try {
+      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.');
+
+      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        var then = newValue.then;
+
+        if (newValue instanceof Promise) {
+          self._state = 3;
+          self._value = newValue;
+          finale(self);
+          return;
+        } else if (typeof then === 'function') {
+          doResolve(bind(then, newValue), self);
+          return;
+        }
+      }
+
+      self._state = 1;
+      self._value = newValue;
+      finale(self);
+    } catch (e) {
+      reject(self, e);
+    }
+  }
+
+  function reject(self, newValue) {
+    self._state = 2;
+    self._value = newValue;
+    finale(self);
+  }
+
+  function finale(self) {
+    if (self._state === 2 && self._deferreds.length === 0) {
+      Promise._immediateFn(function () {
+        if (!self._handled) {
+          Promise._unhandledRejectionFn(self._value);
+        }
+      });
+    }
+
+    for (var i = 0, len = self._deferreds.length; i < len; i++) {
+      handle(self, self._deferreds[i]);
+    }
+
+    self._deferreds = null;
+  }
+
+  function Handler(onFulfilled, onRejected, promise) {
+    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+    this.promise = promise;
+  }
+
+  function doResolve(fn, self) {
+    var done = false;
+
+    try {
+      fn(function (value) {
+        if (done) return;
+        done = true;
+        resolve(self, value);
+      }, function (reason) {
+        if (done) return;
+        done = true;
+        reject(self, reason);
+      });
+    } catch (ex) {
+      if (done) return;
+      done = true;
+      reject(self, ex);
+    }
+  }
+
+  Promise.prototype['catch'] = function (onRejected) {
+    return this.then(null, onRejected);
+  };
+
+  Promise.prototype.then = function (onFulfilled, onRejected) {
+    var prom = new this.constructor(noop);
+    handle(this, new Handler(onFulfilled, onRejected, prom));
+    return prom;
+  };
+
+  Promise.prototype['finally'] = function (callback) {
+    var constructor = this.constructor;
+    return this.then(function (value) {
+      return constructor.resolve(callback()).then(function () {
+        return value;
+      });
+    }, function (reason) {
+      return constructor.resolve(callback()).then(function () {
+        return constructor.reject(reason);
+      });
+    });
+  };
+
+  Promise.all = function (arr) {
+    return new Promise(function (resolve, reject) {
+      if (!arr || typeof arr.length === 'undefined') throw new TypeError('Promise.all accepts an array');
+      var args = Array.prototype.slice.call(arr);
+      if (args.length === 0) return resolve([]);
+      var remaining = args.length;
+
+      function res(i, val) {
+        try {
+          if (val && (typeof val === 'object' || typeof val === 'function')) {
+            var then = val.then;
+
+            if (typeof then === 'function') {
+              then.call(val, function (val) {
+                res(i, val);
+              }, reject);
+              return;
+            }
+          }
+
+          args[i] = val;
+
+          if (--remaining === 0) {
+            resolve(args);
+          }
+        } catch (ex) {
+          reject(ex);
+        }
+      }
+
+      for (var i = 0; i < args.length; i++) {
+        res(i, args[i]);
+      }
+    });
+  };
+
+  Promise.resolve = function (value) {
+    if (value && typeof value === 'object' && value.constructor === Promise) {
+      return value;
+    }
+
+    return new Promise(function (resolve) {
+      resolve(value);
+    });
+  };
+
+  Promise.reject = function (value) {
+    return new Promise(function (resolve, reject) {
+      reject(value);
+    });
+  };
+
+  Promise.race = function (values) {
+    return new Promise(function (resolve, reject) {
+      for (var i = 0, len = values.length; i < len; i++) {
+        values[i].then(resolve, reject);
+      }
+    });
+  };
+
+  Promise._immediateFn = typeof setImmediate === 'function' && function (fn) {
+    setImmediate(fn);
+  } || function (fn) {
+    setTimeoutFunc(fn, 0);
+  };
+
+  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+    if (typeof console !== 'undefined' && console) {
+      console.warn('Possible Unhandled Promise Rejection:', err);
+    }
+  };
+
+  var globalNS = function () {
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+
+    throw new Error('unable to locate global object');
+  }();
+
+  if (!globalNS.Promise) {
+    globalNS.Promise = Promise;
+  }
+
+  function createCommonjsModule(fn, module) {
+    return module = {
+      exports: {}
+    }, fn(module, module.exports), module.exports;
+  }
+
+  var _global = createCommonjsModule(function (module) {
+    var global = module.exports = typeof window != 'undefined' && window.Math == Math ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+    if (typeof __g == 'number') __g = global;
+  });
+
+  var _core = createCommonjsModule(function (module) {
+    var core = module.exports = {
+      version: '2.5.5'
+    };
+    if (typeof __e == 'number') __e = core;
+  });
+
+  var _core_1 = _core.version;
+
+  var _isObject = function _isObject(it) {
+    return typeof it === 'object' ? it !== null : typeof it === 'function';
+  };
+
+  var _anObject = function _anObject(it) {
+    if (!_isObject(it)) throw TypeError(it + ' is not an object!');
+    return it;
+  };
+
+  var _fails = function _fails(exec) {
+    try {
+      return !!exec();
+    } catch (e) {
+      return true;
+    }
+  };
+
+  var _descriptors = !_fails(function () {
+    return Object.defineProperty({}, 'a', {
+      get: function get() {
+        return 7;
+      }
+    }).a != 7;
+  });
+
+  var document = _global.document;
+
+  var is = _isObject(document) && _isObject(document.createElement);
+
+  var _domCreate = function _domCreate(it) {
+    return is ? document.createElement(it) : {};
+  };
+
+  var _ie8DomDefine = !_descriptors && !_fails(function () {
+    return Object.defineProperty(_domCreate('div'), 'a', {
+      get: function get() {
+        return 7;
+      }
+    }).a != 7;
+  });
+
+  var _toPrimitive = function _toPrimitive(it, S) {
+    if (!_isObject(it)) return it;
+    var fn, val;
+    if (S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+    if (typeof (fn = it.valueOf) == 'function' && !_isObject(val = fn.call(it))) return val;
+    if (!S && typeof (fn = it.toString) == 'function' && !_isObject(val = fn.call(it))) return val;
+    throw TypeError("Can't convert object to primitive value");
+  };
+
+  var dP = Object.defineProperty;
+  var f = _descriptors ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+    _anObject(O);
+
+    P = _toPrimitive(P, true);
+
+    _anObject(Attributes);
+
+    if (_ie8DomDefine) try {
+      return dP(O, P, Attributes);
+    } catch (e) {}
+    if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+    if ('value' in Attributes) O[P] = Attributes.value;
+    return O;
+  };
+  var _objectDp = {
+    f: f
+  };
+
+  var _propertyDesc = function _propertyDesc(bitmap, value) {
+    return {
+      enumerable: !(bitmap & 1),
+      configurable: !(bitmap & 2),
+      writable: !(bitmap & 4),
+      value: value
+    };
+  };
+
+  var _hide = _descriptors ? function (object, key, value) {
+    return _objectDp.f(object, key, _propertyDesc(1, value));
+  } : function (object, key, value) {
+    object[key] = value;
+    return object;
+  };
+
+  var hasOwnProperty = {}.hasOwnProperty;
+
+  var _has = function _has(it, key) {
+    return hasOwnProperty.call(it, key);
+  };
+
+  var id = 0;
+  var px = Math.random();
+
+  var _uid = function _uid(key) {
+    return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+  };
+
+  var _redefine = createCommonjsModule(function (module) {
+    var SRC = _uid('src');
+
+    var TO_STRING = 'toString';
+    var $toString = Function[TO_STRING];
+    var TPL = ('' + $toString).split(TO_STRING);
+
+    _core.inspectSource = function (it) {
+      return $toString.call(it);
+    };
+
+    (module.exports = function (O, key, val, safe) {
+      var isFunction = typeof val == 'function';
+      if (isFunction) _has(val, 'name') || _hide(val, 'name', key);
+      if (O[key] === val) return;
+      if (isFunction) _has(val, SRC) || _hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+
+      if (O === _global) {
+        O[key] = val;
+      } else if (!safe) {
+        delete O[key];
+
+        _hide(O, key, val);
+      } else if (O[key]) {
+        O[key] = val;
+      } else {
+        _hide(O, key, val);
+      }
+    })(Function.prototype, TO_STRING, function toString() {
+      return typeof this == 'function' && this[SRC] || $toString.call(this);
+    });
+  });
+
+  var _aFunction = function _aFunction(it) {
+    if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+    return it;
+  };
+
+  var _ctx = function _ctx(fn, that, length) {
+    _aFunction(fn);
+
+    if (that === undefined) return fn;
+
+    switch (length) {
+      case 1:
+        return function (a) {
+          return fn.call(that, a);
+        };
+
+      case 2:
+        return function (a, b) {
+          return fn.call(that, a, b);
+        };
+
+      case 3:
+        return function (a, b, c) {
+          return fn.call(that, a, b, c);
+        };
+    }
+
+    return function () {
+      return fn.apply(that, arguments);
+    };
+  };
+
+  var PROTOTYPE = 'prototype';
+
+  var $export = function $export(type, name, source) {
+    var IS_FORCED = type & $export.F;
+    var IS_GLOBAL = type & $export.G;
+    var IS_STATIC = type & $export.S;
+    var IS_PROTO = type & $export.P;
+    var IS_BIND = type & $export.B;
+    var target = IS_GLOBAL ? _global : IS_STATIC ? _global[name] || (_global[name] = {}) : (_global[name] || {})[PROTOTYPE];
+    var exports = IS_GLOBAL ? _core : _core[name] || (_core[name] = {});
+    var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+    var key, own, out, exp;
+    if (IS_GLOBAL) source = name;
+
+    for (key in source) {
+      own = !IS_FORCED && target && target[key] !== undefined;
+      out = (own ? target : source)[key];
+      exp = IS_BIND && own ? _ctx(out, _global) : IS_PROTO && typeof out == 'function' ? _ctx(Function.call, out) : out;
+      if (target) _redefine(target, key, out, type & $export.U);
+      if (exports[key] != out) _hide(exports, key, exp);
+      if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+    }
+  };
+
+  _global.core = _core;
+  $export.F = 1;
+  $export.G = 2;
+  $export.S = 4;
+  $export.P = 8;
+  $export.B = 16;
+  $export.W = 32;
+  $export.U = 64;
+  $export.R = 128;
+  var _export = $export;
+  var toString = {}.toString;
+
+  var _cof = function _cof(it) {
+    return toString.call(it).slice(8, -1);
+  };
+
+  var _iobject = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+    return _cof(it) == 'String' ? it.split('') : Object(it);
+  };
+
+  var _defined = function _defined(it) {
+    if (it == undefined) throw TypeError("Can't call method on  " + it);
+    return it;
+  };
+
+  var _toObject = function _toObject(it) {
+    return Object(_defined(it));
+  };
+
+  var ceil = Math.ceil;
+  var floor = Math.floor;
+
+  var _toInteger = function _toInteger(it) {
+    return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+  };
+
+  var min = Math.min;
+
+  var _toLength = function _toLength(it) {
+    return it > 0 ? min(_toInteger(it), 0x1fffffffffffff) : 0;
+  };
+
+  var _isArray = Array.isArray || function isArray(arg) {
+    return _cof(arg) == 'Array';
+  };
+
+  var SHARED = '__core-js_shared__';
+  var store = _global[SHARED] || (_global[SHARED] = {});
+
+  var _shared = function _shared(key) {
+    return store[key] || (store[key] = {});
+  };
+
+  var _wks = createCommonjsModule(function (module) {
+    var store = _shared('wks');
+
+    var Symbol = _global.Symbol;
+    var USE_SYMBOL = typeof Symbol == 'function';
+
+    var $exports = module.exports = function (name) {
+      return store[name] || (store[name] = USE_SYMBOL && (typeof Symbol === "function" ? Symbol[name] : "@@name") || (USE_SYMBOL ? Symbol : _uid)('Symbol.' + name));
+    };
+
+    $exports.store = store;
+  });
+
+  var SPECIES = _wks('species');
+
+  var _arraySpeciesConstructor = function _arraySpeciesConstructor(original) {
+    var C;
+
+    if (_isArray(original)) {
+      C = original.constructor;
+      if (typeof C == 'function' && (C === Array || _isArray(C.prototype))) C = undefined;
+
+      if (_isObject(C)) {
+        C = C[SPECIES];
+        if (C === null) C = undefined;
+      }
+    }
+
+    return C === undefined ? Array : C;
+  };
+
+  var _arraySpeciesCreate = function _arraySpeciesCreate(original, length) {
+    return new (_arraySpeciesConstructor(original))(length);
+  };
+
+  var _arrayMethods = function _arrayMethods(TYPE, $create) {
+    var IS_MAP = TYPE == 1;
+    var IS_FILTER = TYPE == 2;
+    var IS_SOME = TYPE == 3;
+    var IS_EVERY = TYPE == 4;
+    var IS_FIND_INDEX = TYPE == 6;
+    var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+    var create = $create || _arraySpeciesCreate;
+    return function ($this, callbackfn, that) {
+      var O = _toObject($this);
+
+      var self = _iobject(O);
+
+      var f = _ctx(callbackfn, that, 3);
+
+      var length = _toLength(self.length);
+
+      var index = 0;
+      var result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+      var val, res;
+
+      for (; length > index; index++) {
+        if (NO_HOLES || index in self) {
+          val = self[index];
+          res = f(val, index, O);
+
+          if (TYPE) {
+            if (IS_MAP) result[index] = res;else if (res) switch (TYPE) {
+                case 3:
+                  return true;
+
+                case 5:
+                  return val;
+
+                case 6:
+                  return index;
+
+                case 2:
+                  result.push(val);
+              } else if (IS_EVERY) return false;
+          }
+        }
+      }
+
+      return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+    };
+  };
+
+  var UNSCOPABLES = _wks('unscopables');
+
+  var ArrayProto = Array.prototype;
+  if (ArrayProto[UNSCOPABLES] == undefined) _hide(ArrayProto, UNSCOPABLES, {});
+
+  var _addToUnscopables = function _addToUnscopables(key) {
+    ArrayProto[UNSCOPABLES][key] = true;
+  };
+
+  var $find = _arrayMethods(5);
+
+  var KEY = 'find';
+  var forced = true;
+  if (KEY in []) Array(1)[KEY](function () {
+    forced = false;
+  });
+
+  _export(_export.P + _export.F * forced, 'Array', {
+    find: function find(callbackfn) {
+      return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  _addToUnscopables(KEY);
+
+  var find = _core.Array.find;
+
+  var $find$1 = _arrayMethods(6);
+
+  var KEY$1 = 'findIndex';
+  var forced$1 = true;
+  if (KEY$1 in []) Array(1)[KEY$1](function () {
+    forced$1 = false;
+  });
+
+  _export(_export.P + _export.F * forced$1, 'Array', {
+    findIndex: function findIndex(callbackfn) {
+      return $find$1(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+    }
+  });
+
+  _addToUnscopables(KEY$1);
+
+  var findIndex = _core.Array.findIndex;
+
+  var MATCH = _wks('match');
+
+  var _isRegexp = function _isRegexp(it) {
+    var isRegExp;
+    return _isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : _cof(it) == 'RegExp');
+  };
+
+  var _stringContext = function _stringContext(that, searchString, NAME) {
+    if (_isRegexp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
+    return String(_defined(that));
+  };
+
+  var MATCH$1 = _wks('match');
+
+  var _failsIsRegexp = function _failsIsRegexp(KEY) {
+    var re = /./;
+
+    try {
+      '/./'[KEY](re);
+    } catch (e) {
+      try {
+        re[MATCH$1] = false;
+        return !'/./'[KEY](re);
+      } catch (f) {}
+    }
+
+    return true;
+  };
+
+  var STARTS_WITH = 'startsWith';
+  var $startsWith = ''[STARTS_WITH];
+
+  _export(_export.P + _export.F * _failsIsRegexp(STARTS_WITH), 'String', {
+    startsWith: function startsWith(searchString) {
+      var that = _stringContext(this, searchString, STARTS_WITH);
+
+      var index = _toLength(Math.min(arguments.length > 1 ? arguments[1] : undefined, that.length));
+
+      var search = String(searchString);
+      return $startsWith ? $startsWith.call(that, search, index) : that.slice(index, index + search.length) === search;
+    }
+  });
+
+  var startsWith = _core.String.startsWith;
+
+  var _stringRepeat = function repeat(count) {
+    var str = String(_defined(this));
+    var res = '';
+
+    var n = _toInteger(count);
+
+    if (n < 0 || n == Infinity) throw RangeError("Count can't be negative");
+
+    for (; n > 0; (n >>>= 1) && (str += str)) {
+      if (n & 1) res += str;
+    }
+
+    return res;
+  };
+
+  _export(_export.P, 'String', {
+    repeat: _stringRepeat
+  });
+
+  var repeat = _core.String.repeat;
+});

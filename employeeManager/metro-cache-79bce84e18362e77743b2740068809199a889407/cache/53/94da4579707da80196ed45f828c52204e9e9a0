@@ -1,0 +1,45 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Spinner = undefined;
+  var _jsxFileName = "/home/daksh/workspace/employeeManager/src/components/common/Spinner.js";
+
+  var _react = _require(_dependencyMap[0], "react");
+
+  var _react2 = _interopRequireDefault(_react);
+
+  var _reactNative = _require(_dependencyMap[1], "react-native");
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var Spinner = function Spinner(_ref) {
+    var spinnerSize = _ref.spinnerSize;
+    return _react2.default.createElement(
+      _reactNative.View,
+      {
+        style: styles.spinnerStyle,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 5
+        }
+      },
+      _react2.default.createElement(_reactNative.ActivityIndicator, {
+        size: spinnerSize || 'large',
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 6
+        }
+      })
+    );
+  };
+
+  var styles = {
+    spinnerStyle: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  };
+  exports.Spinner = Spinner;
+});

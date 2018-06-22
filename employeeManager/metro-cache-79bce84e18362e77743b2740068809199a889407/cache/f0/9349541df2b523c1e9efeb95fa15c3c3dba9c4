@@ -1,0 +1,85 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.EditText = undefined;
+  var _jsxFileName = "/home/daksh/workspace/employeeManager/src/components/common/EditText.js";
+
+  var _react = _require(_dependencyMap[0], "react");
+
+  var _react2 = _interopRequireDefault(_react);
+
+  var _reactNative = _require(_dependencyMap[1], "react-native");
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var EditText = function EditText(_ref) {
+    var label = _ref.label,
+        onChangeText = _ref.onChangeText,
+        value = _ref.value,
+        placeholder = _ref.placeholder,
+        isSecureTextEntry = _ref.isSecureTextEntry,
+        keyboardType = _ref.keyboardType,
+        maxLength = _ref.maxLength;
+    return _react2.default.createElement(
+      _reactNative.View,
+      {
+        style: styles.containerStyle,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 13
+        }
+      },
+      _react2.default.createElement(
+        _reactNative.Text,
+        {
+          style: styles.labelStyle,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 14
+          }
+        },
+        label
+      ),
+      _react2.default.createElement(_reactNative.TextInput, {
+        secureTextEntry: isSecureTextEntry,
+        placeholder: placeholder,
+        autoCorrect: false,
+        style: styles.inputStyle,
+        onChangeText: onChangeText,
+        keyboardType: keyboardType,
+        value: value,
+        maxLength: maxLength,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 19
+        }
+      })
+    );
+  };
+
+  var styles = {
+    inputStyle: {
+      color: '#000',
+      paddingRight: 5,
+      paddingLeft: 5,
+      fontSize: 18,
+      lineHeight: 23,
+      flex: 2,
+      borderBottomWidth: 0,
+      borderColor: '#bbbbbb'
+    },
+    labelStyle: {
+      fontSize: 18,
+      paddingLeft: 20,
+      flex: 1
+    },
+    containerStyle: {
+      height: 40,
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center'
+    }
+  };
+  exports.EditText = EditText;
+});

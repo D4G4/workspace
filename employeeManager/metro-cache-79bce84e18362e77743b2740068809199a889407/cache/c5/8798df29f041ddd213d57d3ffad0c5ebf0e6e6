@@ -1,0 +1,13 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var EMAIL_CHANGED = exports.EMAIL_CHANGED = 'email_changed';
+  var PASSWORD_CHANGED = exports.PASSWORD_CHANGED = 'password_changed';
+  var LOGIN_SUCCESS = exports.LOGIN_SUCCESS = 'login_successful';
+  var LOGIN_FAILED = exports.LOGIN_FAILED = 'login_faliure';
+  var LOGGING_USER_IN = exports.LOGGING_USER_IN = 'logging_user_in';
+  var EMPLOYEE_UPDATE = exports.EMPLOYEE_UPDATE = 'update_an_employee';
+  var EMPLOYEE_CREATE = exports.EMPLOYEE_CREATE = 'create_an_employee';
+  var EMPLOYEES_FETCH_SUCCESS = exports.EMPLOYEES_FETCH_SUCCESS = 'fetching_emp_data_succesful';
+});

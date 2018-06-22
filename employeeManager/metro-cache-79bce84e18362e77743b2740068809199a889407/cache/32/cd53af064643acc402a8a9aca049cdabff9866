@@ -1,0 +1,27 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _redux = _require(_dependencyMap[0], "redux");
+
+  var _AuthReducer = _require(_dependencyMap[1], "./AuthReducer");
+
+  var _AuthReducer2 = _interopRequireDefault(_AuthReducer);
+
+  var _EmployeeFormReducer = _require(_dependencyMap[2], "./EmployeeFormReducer");
+
+  var _EmployeeFormReducer2 = _interopRequireDefault(_EmployeeFormReducer);
+
+  var _EmployeeReducer = _require(_dependencyMap[3], "./EmployeeReducer");
+
+  var _EmployeeReducer2 = _interopRequireDefault(_EmployeeReducer);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  exports.default = (0, _redux.combineReducers)({
+    authenticationReducer: _AuthReducer2.default,
+    employeeFormReducer: _EmployeeFormReducer2.default,
+    employeeReducer: _EmployeeReducer2.default
+  });
+});

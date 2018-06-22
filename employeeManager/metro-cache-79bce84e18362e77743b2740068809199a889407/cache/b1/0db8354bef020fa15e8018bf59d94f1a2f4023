@@ -1,0 +1,54 @@
+__d(function (global, _require, module, exports, _dependencyMap) {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Card = undefined;
+  var _jsxFileName = "/home/daksh/workspace/employeeManager/src/components/common/Card.js";
+
+  var _react = _require(_dependencyMap[0], "react");
+
+  var _react2 = _interopRequireDefault(_react);
+
+  var _reactNative = _require(_dependencyMap[1], "react-native");
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var Card = function Card(props) {
+    var cardStyle = styles.cardStyle;
+    return _react2.default.createElement(
+      _reactNative.View,
+      {
+        style: cardStyle,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 9
+        }
+      },
+      props.children
+    );
+  };
+
+  var styles = {
+    cardStyle: {
+      backgroundColor: '#F8F8F8',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderRadius: 5,
+      borderColor: '#B22222',
+      margin: 20,
+      padding: 5,
+      elevation: 1,
+      marginLeft: 5,
+      marginRight: 5,
+      marginTop: 10,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 2
+    }
+  };
+  exports.Card = Card;
+});
